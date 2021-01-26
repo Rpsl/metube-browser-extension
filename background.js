@@ -16,8 +16,8 @@ chrome.runtime.onInstalled.addListener(function () {
 
 chrome.contextMenus.onClicked.addListener(function (item, tab) {
     chrome.storage.sync.get(['metube'], function (data) {
-        if(data === undefined || !data.hasOwnProperty('metube') ){
-            // todo notify user about settings
+        if (data === undefined || !data.hasOwnProperty('metube') || data.metube === "") {
+            openTab(chrome.extension.getURL('options.html'), tab);
             return
         }
 
@@ -29,13 +29,7 @@ chrome.contextMenus.onClicked.addListener(function (item, tab) {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 let json = JSON.parse(xhr.responseText);
                 if (json.status === "ok") {
-                    chrome.tabs.query({url: url + "/*"}, function (tabs) {
-                        if (tabs.length !== 0) {
-                            chrome.tabs.update(tabs[0].id, {'active': true}, () => {});
-                        } else {
-                            chrome.tabs.create({url: url, index: tab.index + 1});
-                        }
-                    });
+                    openTab(data.metube, tab);
                 } else {
                     alert("error :: " + json);
                 }
@@ -44,3 +38,24 @@ chrome.contextMenus.onClicked.addListener(function (item, tab) {
         xhr.send(JSON.stringify({"quality": "best", "url": item.linkUrl}));
     });
 });
+
+chrome.browserAction.onClicked.addListener(function (tab) {
+    chrome.storage.sync.get(['metube'], function (data) {
+        if (data === undefined || !data.hasOwnProperty('metube') || data.metube === "") {
+            openTab(chrome.extension.getURL('options.html'), tab);
+            return
+        }
+
+        openTab(data.metube, tab);
+    });
+});
+
+function openTab(url, currentTab) {
+    chrome.tabs.query({url: url + "/*"}, function (tabs) {
+        if (tabs.length !== 0) {
+            chrome.tabs.update(tabs[0].id, {'active': true}, () => {});
+        } else {
+            chrome.tabs.create({url: url, index: currentTab.index + 1});
+        }
+    });
+}
