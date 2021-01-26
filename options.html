@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="English">
+  <head>
+    <title>MeTube Downloader</title>
+    <style>
+    body {
+      padding: 0 20px 20px 20px;
+      min-width: 400px;
+      font-size: 15px;
+    }
+    input {
+      margin: 5px;
+      outline: none;
+    }
+    .hidden {
+      display: none;
+    }
+    </style>
+  </head>
+
+  <body>
+    <h3>About</h3>
+    <p>This extension is context menu button for sending links of youtube videos into you own instance of MeTube</p>
+    <p>This extension won't work without installed MeTube. For additional instructions see <a href="https://github.com/alexta69/metube" target="_blank">github page of MeTube</a>.</p>
+    <p>If you have some throubles with extension you can open issue on github page of extension.</p>
+    <p>&nbsp;</p>
+    <h3>Settings</h3>
+    <form id="form">
+      <label for="metube">Url of MeTube</label><input type="url" placeholder="http://0.0.0.0:8081/" name="metube" id="metube">
+      <button type='submit'>Save</button>
+      <p id="saved" class="hidden">Settings saved!</p>
+    </form>
+  </body>
+  <script src="options.js"></script>
+</html>
