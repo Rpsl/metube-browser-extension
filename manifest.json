@@ -2,19 +2,16 @@
   "name": "MeTube Downloader",
   "description": "Use the context menu to send video into MeTube application",
   "version": "1.0",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "permissions": ["contextMenus", "storage", "tabs"],
   "background": {
-    "scripts": [
-      "background.js"
-    ],
-    "persistent": false
+    "service_worker": "background.js"
   },
   "options_ui": {
     "page": "options.html",
     "browser_style": true
   },
-  "browser_action": {
+  "action": {
     "default_title": "",
     "default_icon": "icon128.png"
   },
