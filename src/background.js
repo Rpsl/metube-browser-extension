@@ -5,7 +5,7 @@ chrome.runtime.onInstalled.addListener(function () {
     chrome.contextMenus.create({
         id: 'metube',
         title: "Send to MeTube",
-        documentUrlPatterns: [
+        targetUrlPatterns: [
             'https://www.youtube.com/*',
             'https://m.youtube.com/*',
             'https://youtu.be/*'
@@ -21,9 +21,7 @@ chrome.contextMenus.onClicked.addListener(function (item, tab) {
             return
         }
 
-        let url = data.metube;
-
-        fetch(url + "/add", {
+        fetch(data.metube + "/add", {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -35,12 +33,14 @@ chrome.contextMenus.onClicked.addListener(function (item, tab) {
                 if (res.ok === true && res.status === 200) {
                     return res.json();
                 }
+                // todo fix it
                 alert("error :: code " + res.status);
             })
             .then(function (result) {
                 if (result.status === "ok") {
                     openTab(data.metube, tab);
                 } else {
+                    // todo fix it
                     alert("error :: " + json);
                 }
             })
