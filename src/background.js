@@ -17,7 +17,7 @@ chrome.runtime.onInstalled.addListener(function () {
 chrome.contextMenus.onClicked.addListener(function (item, tab) {
     chrome.storage.sync.get(['metube'], function (data) {
         if (data === undefined || !data.hasOwnProperty('metube') || data.metube === "") {
-            openTab(chrome.extension.getURL('options.html'), tab);
+            openTab(chrome.runtime.getURL('options.html'), tab);
             return
         }
 
@@ -53,7 +53,7 @@ chrome.contextMenus.onClicked.addListener(function (item, tab) {
 chrome.action.onClicked.addListener(function (tab) {
     chrome.storage.sync.get(['metube'], function (data) {
         if (data === undefined || !data.hasOwnProperty('metube') || data.metube === "") {
-            openTab(chrome.extension.getURL('options.html'), tab);
+            openTab(chrome.runtime.getURL('options.html'), tab);
             return
         }
 

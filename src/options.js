@@ -16,6 +16,9 @@ async function saveOptions() {
 
 async function restoreOptions() {
     chrome.storage.sync.get(['metube'], function (data) {
+        if (data.metube === undefined) {
+            return
+        }
         document.getElementById("metube").value = data.metube;
     });
 }
