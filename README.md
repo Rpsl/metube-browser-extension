@@ -9,7 +9,7 @@ Use the context menu to send YouTube video into [MeTube](https://github.com/alex
 Installation from store
 -----
 
-- ~~Google Chrome~~ not available at now. Possible later
+- Install from [Google Chrome Webstore](https://chrome.google.com/webstore/detail/metube-downloader/fbmkmdnlhacefjljljlbhkodfmfkijdh)
 
 Installation from sources
 -----
