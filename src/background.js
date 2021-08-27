@@ -9,8 +9,10 @@ chrome.runtime.onInstalled.addListener(function () {
             'https://www.youtube.com/*',
             'https://m.youtube.com/*',
             'https://youtu.be/*',
+            'https://www.pornhub.com/*',
             'https://pornhub.com/*',
-            'https://xhamster.com/*'
+            'https://xhamster.com/*',
+            'https://www.xhamster.com/*'
         ],
         contexts: ['link'],
     });
