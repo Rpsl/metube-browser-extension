@@ -8,7 +8,9 @@ chrome.runtime.onInstalled.addListener(function () {
         targetUrlPatterns: [
             'https://www.youtube.com/*',
             'https://m.youtube.com/*',
-            'https://youtu.be/*'
+            'https://youtu.be/*',
+            'https://pornhub.com/*',
+            'https://xhamster.com/*'
         ],
         contexts: ['link'],
     });
