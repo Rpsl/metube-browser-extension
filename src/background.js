@@ -1,5 +1,4 @@
-'use strict';
-
+// 'use strict';
 chrome.runtime.onInstalled.addListener(function() {
     // https://stackoverflow.com/questions/19377262/regex-for-youtube-url
     chrome.contextMenus.create({
@@ -87,18 +86,13 @@ chrome.runtime.onInstalled.addListener(function() {
             'http://Gov.sg/*',
             'http://faz.net/*',
             'http://dl.org/*',
-            'http://ServerConst.as/*',
-            'http://balancer-vod.1tv.ru/*',
-            'http://ft.dk/*',
             'http://token.4tube.com/*',
             'http://token.fux.com/*',
             'http://tkn.porntube.com/*',
             'http://token.pornerbros.com/*',
             'http://Foxgay.com/*',
-            'http://foxgay.com/*',
-            'http://hdfauthftv-a.akamaihd.net/*',
-            'http://hdfauth.francetv.fr/*',
-            'http://live.francetv.fr/*'
+            'http://foxgay.com/*'
+
         ],
         contexts: ['link'],
     });
