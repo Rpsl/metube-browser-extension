@@ -5,6 +5,9 @@ chrome.runtime.onInstalled.addListener(function() {
         id: 'metube',
         title: "Send to MeTube",
         targetUrlPatterns: [
+			'https://www.youtube.com/*',
+            'https://m.youtube.com/*',
+            'https://youtu.be/*',
             'https://xnxx.com/*',
             'https://www.xnxx.com/*',
             'http://www.alphaporno.com/*',
