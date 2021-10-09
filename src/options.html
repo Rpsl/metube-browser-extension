@@ -12,23 +12,33 @@
       margin: 5px;
       outline: none;
     }
+    textarea {
+      width: 100%;
+      height: 100px;
+    }
     .hidden {
       display: none;
+    }
+    #saved {
+      color: green;
     }
     </style>
   </head>
 
   <body>
-    <h3>About</h3>
     <p>This extension is context menu button for sending links of youtube videos into you own instance of MeTube</p>
     <p>This extension won't work without installed MeTube. For additional instructions see <a href="https://github.com/alexta69/metube" target="_blank">github page of MeTube</a>.</p>
-    <p>If you have some throubles with extension you can open issue on github page of extension.</p>
-    <p>&nbsp;</p>
-    <h3>Settings</h3>
+    <p>If you have some troubles with extension you can open issue on github page of extension.</p>
     <form id="form">
+      <h3>Settings</h3>
       <label for="metube">Url of MeTube</label><input type="url" placeholder="http://0.0.0.0:8081/" name="metube" id="metube">
-      <button type='submit'>Save</button>
+      <h3>Additional sites</h3>
+      <p>Youtube-dl support <a href="https://github.com/ytdl-org/youtube-dl/blob/master/docs/supportedsites.md" target="_blank">many another sites</a> except youtube. You can add mask url's of this sites in textfield bellow but it can affect performance and we have not tested them support</p>
+      <p><textarea name="additional" id="additional" placeholder="https://vimeo.com/*
+https://video.disney.com/*"></textarea></p>
+      <button type='submit'>Save settings</button>
       <p id="saved" class="hidden">Settings saved!</p>
+      <p>&nbsp;</p>
     </form>
   </body>
   <script src="options.js"></script>
