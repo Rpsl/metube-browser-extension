@@ -7,7 +7,9 @@ async function saveOptions() {
 
     let sites = document.getElementById("additional").value;
 
-    chrome.storage.sync.set({ "metube": url, "sites": sites }, function () {
+    let sendOnClick = document.getElementById("send-on-click").checked;
+
+    chrome.storage.sync.set({ "metube": url, "sites": sites, "sendOnClick": sendOnClick}, function () {
         document.getElementById("saved").classList.remove('hidden');
 
         setTimeout(function () {
@@ -18,7 +20,7 @@ async function saveOptions() {
     sites = splitLines(sites);
 
     // todo: fix it
-    // also need make function for check string 
+    // also need make function for check string
     // https://developer.chrome.com/docs/extensions/mv3/match_patterns/
     if(sites.length <= 1){
         return;
@@ -39,15 +41,18 @@ async function saveOptions() {
 }
 
 async function restoreOptions() {
-    chrome.storage.sync.get(['metube', 'sites'], function (data) {
+    chrome.storage.sync.get(['metube', 'sites', 'sendOnClick'], function (data) {
         if (data.metube != undefined) {
-            document.getElementById("metube").value = data.metube;    
+            document.getElementById("metube").value = data.metube;
         }
 
         if (data.sites != undefined) {
-            document.getElementById("additional").value = data.sites;    
+            document.getElementById("additional").value = data.sites;
         }
-        
+        // document.getElementById("send-on-click").checked = true;
+        if (data.sendOnClick) {
+            document.getElementById("send-on-click").checked = true;
+        }
     });
 }
 

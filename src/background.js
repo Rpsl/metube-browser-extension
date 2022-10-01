@@ -54,13 +54,25 @@ chrome.contextMenus.onClicked.addListener(function(item, tab) {
 });
 
 chrome.action.onClicked.addListener(function(tab) {
-    chrome.storage.sync.get(['metube'], function(data) {
+    chrome.storage.sync.get(['metube', 'sendOnClick'], function(data) {
         if (data === undefined || !data.hasOwnProperty('metube') || data.metube === "") {
             openTab(chrome.runtime.getURL('options.html'), tab);
             return
         }
-
-        openTab(data.metube, tab);
+        chrome.tabs.query({
+            active: true,
+            lastFocusedWindow: true
+        }, function(tabs) {
+            // use this tab to get the youtube video URL
+            let videoUrl = tabs[0].url;
+            if (data.sendOnClick) {
+                sendVideoUrlToMetubeAndSwitchTab(videoUrl, data.metube, tab);
+            }
+            else {
+                console.log("Going to Metube URL...");
+                openTab(data.metube, tab);
+            }
+        });
     });
 });
 
