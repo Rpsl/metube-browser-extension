@@ -29,17 +29,15 @@ function sendVideoUrlToMetubeAndSwitchTab(videoUrl, metubeUrl, tab) {
         if (res.ok === true && res.status === 200) {
             return res.json();
         }
-        // todo fix it
-        alert("error :: code " + res.status);
+        console.log("error :: code " + res.status);
     }).then(function(result) {
         if (result.status === "ok") {
             openTab(metubeUrl, tab);
         } else {
-            // todo fix it
-            alert("error :: " + json);
+            console.log("error :: ", result );
         }
     }).catch(function(res) {
-        alert("error :: " + res);
+        console.log("Final catch - error :: " + res);
     });
 }
 
@@ -54,25 +52,28 @@ chrome.contextMenus.onClicked.addListener(function(item, tab) {
 });
 
 chrome.action.onClicked.addListener(function(tab) {
-    chrome.storage.sync.get(['metube', 'sendOnClick'], function(data) {
+    chrome.storage.sync.get(['metube', 'clickBehavior'], function(data) {
         if (data === undefined || !data.hasOwnProperty('metube') || data.metube === "") {
             openTab(chrome.runtime.getURL('options.html'), tab);
             return
         }
-        chrome.tabs.query({
-            active: true,
-            lastFocusedWindow: true
-        }, function(tabs) {
-            // use this tab to get the youtube video URL
-            let videoUrl = tabs[0].url;
-            if (data.sendOnClick) {
+        if (data.clickBehavior == 'do-nothing') {
+            return
+        } else if (data.clickBehavior == 'go-to-metube') {
+            console.log("Going to Metube URL...");
+            openTab(data.metube, tab);
+        } else if (data.clickBehavior == 'send-current-url-and-switch') {
+            chrome.tabs.query({
+                active: true,
+                lastFocusedWindow: true
+            }, function(tabs) {
+                // use this tab to get the youtube video URL
+                let videoUrl = tabs[0].url;
                 sendVideoUrlToMetubeAndSwitchTab(videoUrl, data.metube, tab);
-            }
-            else {
-                console.log("Going to Metube URL...");
-                openTab(data.metube, tab);
-            }
-        });
+            });
+        } else {
+            console.log("Unknown clickBehavior value: " + data.clickBehavior);
+        }
     });
 });
 

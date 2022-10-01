@@ -7,9 +7,13 @@ async function saveOptions() {
 
     let sites = document.getElementById("additional").value;
 
-    let sendOnClick = document.getElementById("send-on-click").checked;
+    let clickBehavior = document.querySelector('input[name="click-behavior"]:checked').value;
 
-    chrome.storage.sync.set({ "metube": url, "sites": sites, "sendOnClick": sendOnClick}, function () {
+    chrome.storage.sync.set({
+        "metube": url,
+        "sites": sites,
+        "clickBehavior": clickBehavior
+    }, function () {
         document.getElementById("saved").classList.remove('hidden');
 
         setTimeout(function () {
@@ -41,7 +45,11 @@ async function saveOptions() {
 }
 
 async function restoreOptions() {
-    chrome.storage.sync.get(['metube', 'sites', 'sendOnClick'], function (data) {
+    chrome.storage.sync.get([
+        'metube',
+        'sites',
+        'clickBehavior'
+    ], function (data) {
         if (data.metube != undefined) {
             document.getElementById("metube").value = data.metube;
         }
@@ -49,11 +57,9 @@ async function restoreOptions() {
         if (data.sites != undefined) {
             document.getElementById("additional").value = data.sites;
         }
-        // document.getElementById("send-on-click").checked = true;
-        if (data.sendOnClick) {
-            document.getElementById("send-on-click").checked = true;
-        }
-    });
+
+        document.getElementById(data.clickBehavior).checked = true;
+    })
 }
 
 function splitLines(t) { return t.split(/\r\n|\r|\n/); }
