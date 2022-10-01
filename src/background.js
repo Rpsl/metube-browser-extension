@@ -13,42 +13,43 @@ chrome.runtime.onInstalled.addListener(function() {
     });
 });
 
+function sendVideoUrlToMetubeAndSwitchTab(videoUrl, metubeUrl, tab) {
+    console.log("Sending videoUrl=" + videoUrl + " to metubeUrl=" + metubeUrl);
+    fetch(metubeUrl + "/add", {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            "quality": "best",
+            "url": videoUrl
+        })
+    }).then(function(res) {
+        if (res.ok === true && res.status === 200) {
+            return res.json();
+        }
+        // todo fix it
+        alert("error :: code " + res.status);
+    }).then(function(result) {
+        if (result.status === "ok") {
+            openTab(metubeUrl, tab);
+        } else {
+            // todo fix it
+            alert("error :: " + json);
+        }
+    }).catch(function(res) {
+        alert("error :: " + res);
+    });
+}
+
 chrome.contextMenus.onClicked.addListener(function(item, tab) {
     chrome.storage.sync.get(['metube'], function(data) {
         if (data === undefined || !data.hasOwnProperty('metube') || data.metube === "") {
             openTab(chrome.runtime.getURL('options.html'), tab);
             return
         }
-
-        fetch(data.metube + "/add", {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    "quality": "best",
-                    "url": item.linkUrl
-                })
-            })
-            .then(function(res) {
-                if (res.ok === true && res.status === 200) {
-                    return res.json();
-                }
-                // todo fix it
-                alert("error :: code " + res.status);
-            })
-            .then(function(result) {
-                if (result.status === "ok") {
-                    openTab(data.metube, tab);
-                } else {
-                    // todo fix it
-                    alert("error :: " + json);
-                }
-            })
-            .catch(function(res) {
-                alert("error :: " + res);
-            })
+        sendVideoUrlToMetubeAndSwitchTab(item.linkUrl, data.metube, tab);
     });
 });
 
