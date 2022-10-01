@@ -13,7 +13,7 @@ chrome.runtime.onInstalled.addListener(function() {
     });
 });
 
-function sendVideoUrlToMetubeAndSwitchTab(videoUrl, metubeUrl, tab) {
+function sendVideoUrlToMetube(videoUrl, metubeUrl, callback) {
     console.log("Sending videoUrl=" + videoUrl + " to metubeUrl=" + metubeUrl);
     fetch(metubeUrl + "/add", {
         method: 'POST',
@@ -29,15 +29,19 @@ function sendVideoUrlToMetubeAndSwitchTab(videoUrl, metubeUrl, tab) {
         if (res.ok === true && res.status === 200) {
             return res.json();
         }
-        console.log("error :: code " + res.status);
+        console.log("error :: code" + res.status);
     }).then(function(result) {
-        if (result.status === "ok") {
-            openTab(metubeUrl, tab);
-        } else {
+        if (result.status !== "ok") {
             console.log("error :: ", result );
+            if (result.msg.includes('URLError')) {
+                // Go straight to catch block and skip the callback
+                throw new Error('Error when adding URL to MyTube');
+            }
         }
-    }).catch(function(res) {
-        console.log("Final catch - error :: " + res);
+    }).then(function() {
+        typeof callback === 'function' && callback();
+    }).catch(function(e) {
+        console.log("Ran into an error :: ", e);
     });
 }
 
@@ -47,7 +51,9 @@ chrome.contextMenus.onClicked.addListener(function(item, tab) {
             openTab(chrome.runtime.getURL('options.html'), tab);
             return
         }
-        sendVideoUrlToMetubeAndSwitchTab(item.linkUrl, data.metube, tab);
+        sendVideoUrlToMetube(item.linkUrl, data.metube, function() {
+            openTab(data.metube, tab);
+        });
     });
 });
 
@@ -62,6 +68,15 @@ chrome.action.onClicked.addListener(function(tab) {
         } else if (data.clickBehavior == 'go-to-metube') {
             console.log("Going to Metube URL...");
             openTab(data.metube, tab);
+        } else if (data.clickBehavior == 'send-current-url') {
+            chrome.tabs.query({
+                active: true,
+                lastFocusedWindow: true
+            }, function(tabs) {
+                // use this tab to get the youtube video URL
+                let videoUrl = tabs[0].url;
+                sendVideoUrlToMetube(videoUrl, data.metube);
+            });
         } else if (data.clickBehavior == 'send-current-url-and-switch') {
             chrome.tabs.query({
                 active: true,
@@ -69,7 +84,9 @@ chrome.action.onClicked.addListener(function(tab) {
             }, function(tabs) {
                 // use this tab to get the youtube video URL
                 let videoUrl = tabs[0].url;
-                sendVideoUrlToMetubeAndSwitchTab(videoUrl, data.metube, tab);
+                sendVideoUrlToMetube(videoUrl, data.metube, function() {
+                    openTab(data.metube, tab);
+                });
             });
         } else {
             console.log("Unknown clickBehavior value: " + data.clickBehavior);
