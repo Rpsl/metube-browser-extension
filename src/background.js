@@ -46,14 +46,20 @@ function sendVideoUrlToMetube(videoUrl, metubeUrl, callback) {
 }
 
 chrome.contextMenus.onClicked.addListener(function(item, tab) {
-    chrome.storage.sync.get(['metube'], function(data) {
+    chrome.storage.sync.get(['metube', 'contextMenuClickBehavior'], function(data) {
         if (data === undefined || !data.hasOwnProperty('metube') || data.metube === "") {
             openTab(chrome.runtime.getURL('options.html'), tab);
             return
         }
-        sendVideoUrlToMetube(item.linkUrl, data.metube, function() {
-            openTab(data.metube, tab);
-        });
+        if ( data.contextMenuClickBehavior == 'context-menu-send-current-url') {
+            sendVideoUrlToMetube(item.linkUrl, data.metube);
+        } else if (data.contextMenuClickBehavior == 'context-menu-send-current-url-and-switch'){
+            sendVideoUrlToMetube(item.linkUrl, data.metube, function() {
+                openTab(data.metube, tab);
+            });
+        } else {
+            console.log("Unknown contextMenuClickBehavior value: " + data.contextMenuClickBehavior);
+        }
     });
 });
 
