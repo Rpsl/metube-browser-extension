@@ -65,19 +65,6 @@ chrome.contextMenus.onClicked.addListener(function(item, tab) {
     });
 });
 
-
-async function getCurrentTabUrl() {
-    chrome.tabs.query({
-        active: true,
-        lastFocusedWindow: true
-    }, function(tabs) {
-        // use this tab to get the youtube video URL
-        let videoUrl = tabs[0].url;
-        console.log("Got current tab URL", videoUrl);
-        return videoUrl;
-    });
-}
-
 chrome.action.onClicked.addListener(function(tab) {
     chrome.storage.sync.get(['metube', 'clickBehavior'], function(data) {
         if (data === undefined || !data.hasOwnProperty('metube') || data.metube === "") {
