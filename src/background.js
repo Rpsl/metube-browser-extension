@@ -21,6 +21,9 @@ chrome.runtime.onInstalled.addListener(function() {
 
 function sendVideoUrlToMetube(videoUrl, metubeUrl, callback) {
     console.log("Sending videoUrl=" + videoUrl + " to metubeUrl=" + metubeUrl);
+    if (typeof callback !== 'function'){
+        callback = function(){};
+    }
     fetch(metubeUrl + "/add", {
         method: 'POST',
         headers: {
@@ -31,26 +34,17 @@ function sendVideoUrlToMetube(videoUrl, metubeUrl, callback) {
             "quality": "best",
             "url": videoUrl
         })
-    }).then(function(res) {
-        if (res.ok === true && res.status === 200) {
-            return res.json();
-        }
-        console.log("error :: code" + res.status);
-    }).then(function(result) {
-        if (result.status !== "ok") {
-            console.log("error :: ", result );
-            if (result.msg.includes('URLError')) {
-                // Go straight to catch block and skip the callback
-                throw new Error('Error when adding URL to MyTube');
-            }
-        }
-    }).then(function() {
-        if (typeof callback === 'function'){
+    })
+    .then(response=>response.json())
+    .then(function (response) {
+        if (response.status === 'ok') {
             callback();
         }
-    }).catch(function(e) {
-        console.log("Ran into an error :: ", e);
-    });
+        else {
+            console.log("Ran into an error when submitting URL to meTube: " + response.msg);
+        }
+    })
+    .catch(e => console.log("Ran into an unexpected error: " + e));
 }
 
 chrome.contextMenus.onClicked.addListener(function(item, tab) {
