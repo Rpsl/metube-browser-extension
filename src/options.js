@@ -62,8 +62,13 @@ async function restoreOptions() {
             document.getElementById("additional").value = data.sites;
         }
 
-        document.getElementById(data.clickBehavior).checked = true;
-        document.getElementById(data.contextMenuClickBehavior).checked = true;
+        if (data.clickBehavior != undefined) {
+            document.getElementById(data.clickBehavior).checked = true;
+        }
+
+        if (data.contextMenuClickBehavior != undefined) {
+            document.getElementById(data.contextMenuClickBehavior).checked = true;
+        }
     })
 }
 

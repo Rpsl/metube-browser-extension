@@ -11,6 +11,12 @@ chrome.runtime.onInstalled.addListener(function() {
         ],
         contexts: ['link'],
     });
+
+    // Set sane defaults for click behaviors at extension install time
+    chrome.storage.sync.set({
+        "clickBehavior": "go-to-metube",
+        "contextMenuClickBehavior": "context-menu-send-current-url-and-switch"
+    });
 });
 
 function sendVideoUrlToMetube(videoUrl, metubeUrl, callback) {
