@@ -59,15 +59,13 @@ chrome.contextMenus.onClicked.addListener(function(item, tab) {
             openTab(chrome.runtime.getURL('options.html'), tab);
             return
         }
-        if ( data.contextMenuClickBehavior == 'context-menu-send-current-url') {
-            sendVideoUrlToMetube(item.linkUrl, data.metube);
-        } else if (data.contextMenuClickBehavior == 'context-menu-send-current-url-and-switch'){
-            sendVideoUrlToMetube(item.linkUrl, data.metube, function() {
-                openTab(data.metube, tab);
-            });
-        } else {
-            console.log("Unknown contextMenuClickBehavior value: " + data.contextMenuClickBehavior);
-        }
+        let needToSwitch = (data.contextMenuClickBehavior === 'context-menu-send-current-url-and-switch');
+        sendVideoUrlToMetube(item.linkUrl, data.metube, function() {
+            if (!needToSwitch) {
+                return;
+            }
+            openTab(data.metube, tab);
+        });
     });
 });
 
@@ -77,21 +75,13 @@ chrome.action.onClicked.addListener(function(tab) {
             openTab(chrome.runtime.getURL('options.html'), tab);
             return
         }
+        let needToSwitch = (data.clickBehavior === 'send-current-url-and-switch');
         if (data.clickBehavior == 'do-nothing') {
             return
         } else if (data.clickBehavior == 'go-to-metube') {
             console.log("Going to Metube URL...");
             openTab(data.metube, tab);
-        } else if (data.clickBehavior == 'send-current-url') {
-            chrome.tabs.query({
-                active: true,
-                lastFocusedWindow: true
-            }, function(tabs) {
-                // use this tab to get the youtube video URL
-                let videoUrl = tabs[0].url;
-                sendVideoUrlToMetube(videoUrl, data.metube);
-            });
-        } else if (data.clickBehavior == 'send-current-url-and-switch') {
+        } else {
             chrome.tabs.query({
                 active: true,
                 lastFocusedWindow: true
@@ -99,11 +89,12 @@ chrome.action.onClicked.addListener(function(tab) {
                 // use this tab to get the youtube video URL
                 let videoUrl = tabs[0].url;
                 sendVideoUrlToMetube(videoUrl, data.metube, function() {
+                    if (!needToSwitch) {
+                        return;
+                    }
                     openTab(data.metube, tab);
                 });
             });
-        } else {
-            console.log("Unknown clickBehavior value: " + data.clickBehavior);
         }
     });
 });
