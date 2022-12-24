@@ -11,10 +11,19 @@ chrome.runtime.onInstalled.addListener(function() {
         ],
         contexts: ['link'],
     });
+
+    // Set sane defaults for click behaviors at extension install time
+    chrome.storage.sync.set({
+        "clickBehavior": "go-to-metube",
+        "contextMenuClickBehavior": "context-menu-send-current-url-and-switch"
+    });
 });
 
-function sendVideoUrlToMetubeAndSwitchTab(videoUrl, metubeUrl, tab) {
+function sendVideoUrlToMetube(videoUrl, metubeUrl, callback) {
     console.log("Sending videoUrl=" + videoUrl + " to metubeUrl=" + metubeUrl);
+    if (typeof callback !== 'function'){
+        callback = function(){};
+    }
     fetch(metubeUrl + "/add", {
         method: 'POST',
         headers: {
@@ -25,54 +34,62 @@ function sendVideoUrlToMetubeAndSwitchTab(videoUrl, metubeUrl, tab) {
             "quality": "best",
             "url": videoUrl
         })
-    }).then(function(res) {
-        if (res.ok === true && res.status === 200) {
-            return res.json();
+    })
+    .then(response=>response.json())
+    .then(function (response) {
+        if (response.status === 'ok') {
+            callback();
         }
-        // todo fix it
-        alert("error :: code " + res.status);
-    }).then(function(result) {
-        if (result.status === "ok") {
-            openTab(metubeUrl, tab);
-        } else {
-            // todo fix it
-            alert("error :: " + json);
+        else {
+            console.log("Ran into an error when submitting URL to meTube: " + response.msg);
         }
-    }).catch(function(res) {
-        alert("error :: " + res);
-    });
+    })
+    .catch(e => console.log("Ran into an unexpected error: " + e));
 }
 
 chrome.contextMenus.onClicked.addListener(function(item, tab) {
-    chrome.storage.sync.get(['metube'], function(data) {
+    chrome.storage.sync.get(['metube', 'contextMenuClickBehavior'], function(data) {
         if (data === undefined || !data.hasOwnProperty('metube') || data.metube === "") {
             openTab(chrome.runtime.getURL('options.html'), tab);
             return
         }
-        sendVideoUrlToMetubeAndSwitchTab(item.linkUrl, data.metube, tab);
+        let needToSwitch = (data.contextMenuClickBehavior === 'context-menu-send-current-url-and-switch');
+        sendVideoUrlToMetube(item.linkUrl, data.metube, function() {
+            if (!needToSwitch) {
+                return;
+            }
+            openTab(data.metube, tab);
+        });
     });
 });
 
 chrome.action.onClicked.addListener(function(tab) {
-    chrome.storage.sync.get(['metube', 'sendOnClick'], function(data) {
+    chrome.storage.sync.get(['metube', 'clickBehavior'], function(data) {
         if (data === undefined || !data.hasOwnProperty('metube') || data.metube === "") {
             openTab(chrome.runtime.getURL('options.html'), tab);
             return
         }
-        chrome.tabs.query({
-            active: true,
-            lastFocusedWindow: true
-        }, function(tabs) {
-            // use this tab to get the youtube video URL
-            let videoUrl = tabs[0].url;
-            if (data.sendOnClick) {
-                sendVideoUrlToMetubeAndSwitchTab(videoUrl, data.metube, tab);
-            }
-            else {
-                console.log("Going to Metube URL...");
-                openTab(data.metube, tab);
-            }
-        });
+        let needToSwitch = (data.clickBehavior === 'send-current-url-and-switch');
+        if (data.clickBehavior == 'do-nothing') {
+            return
+        } else if (data.clickBehavior == 'go-to-metube') {
+            console.log("Going to Metube URL...");
+            openTab(data.metube, tab);
+        } else {
+            chrome.tabs.query({
+                active: true,
+                lastFocusedWindow: true
+            }, function(tabs) {
+                // use this tab to get the youtube video URL
+                let videoUrl = tabs[0].url;
+                sendVideoUrlToMetube(videoUrl, data.metube, function() {
+                    if (!needToSwitch) {
+                        return;
+                    }
+                    openTab(data.metube, tab);
+                });
+            });
+        }
     });
 });
 
