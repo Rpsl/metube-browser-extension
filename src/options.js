@@ -60,7 +60,6 @@ async function restoreOptions() {
             document.getElementById("additional").value = data.sites;
         }
 
-        alert(data.clickBehavior);
         if (data.clickBehavior !== undefined) {
             document.getElementById(data.clickBehavior).checked = true;
         }
