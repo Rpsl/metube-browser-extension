@@ -1,11 +1,11 @@
 // 'use strict';
-chrome.runtime.onInstalled.addListener(function() {
+chrome.runtime.onInstalled.addListener(function () {
     // https://stackoverflow.com/questions/19377262/regex-for-youtube-url
     chrome.contextMenus.create({
         id: 'metube',
         title: "Send to MeTube",
         targetUrlPatterns: [
-			'https://www.youtube.com/*',
+            'https://www.youtube.com/*',
             'https://m.youtube.com/*',
             'https://youtu.be/*'
         ],
@@ -14,16 +14,19 @@ chrome.runtime.onInstalled.addListener(function() {
 
     // Set sane defaults for click behaviors at extension install time
     chrome.storage.sync.set({
-        "clickBehavior": "go-to-metube",
+        "clickBehavior": "send-current-url",
         "contextMenuClickBehavior": "context-menu-send-current-url-and-switch"
     });
 });
 
 function sendVideoUrlToMetube(videoUrl, metubeUrl, callback) {
     console.log("Sending videoUrl=" + videoUrl + " to metubeUrl=" + metubeUrl);
-    if (typeof callback !== 'function'){
-        callback = function(){};
+
+    if (typeof callback !== 'function') {
+        callback = function () {
+        };
     }
+
     fetch(metubeUrl + "/add", {
         method: 'POST',
         headers: {
@@ -35,72 +38,70 @@ function sendVideoUrlToMetube(videoUrl, metubeUrl, callback) {
             "url": videoUrl
         })
     })
-    .then(response=>response.json())
-    .then(function (response) {
-        if (response.status === 'ok') {
-            callback();
-        }
-        else {
-            console.log("Ran into an error when submitting URL to meTube: " + response.msg);
-        }
-    })
-    .catch(e => console.log("Ran into an unexpected error: " + e));
+        .then(response => response.json())
+        .then(function (response) {
+            if (response.status === 'ok') {
+                callback();
+            }
+        })
+        .catch(e => console.log("Ran into an unexpected error: " + e));
 }
 
-chrome.contextMenus.onClicked.addListener(function(item, tab) {
-    chrome.storage.sync.get(['metube', 'contextMenuClickBehavior'], function(data) {
+chrome.contextMenus.onClicked.addListener(function (item, tab) {
+    chrome.storage.sync.get(['metube', 'contextMenuClickBehavior'], function (data) {
         if (data === undefined || !data.hasOwnProperty('metube') || data.metube === "") {
             openTab(chrome.runtime.getURL('options.html'), tab);
             return
         }
+
         let needToSwitch = (data.contextMenuClickBehavior === 'context-menu-send-current-url-and-switch');
-        sendVideoUrlToMetube(item.linkUrl, data.metube, function() {
-            if (!needToSwitch) {
-                return;
+
+        sendVideoUrlToMetube(item.linkUrl, data.metube, function () {
+            if (needToSwitch) {
+                openTab(data.metube, tab);
             }
-            openTab(data.metube, tab);
         });
     });
 });
 
-chrome.action.onClicked.addListener(function(tab) {
-    chrome.storage.sync.get(['metube', 'clickBehavior'], function(data) {
+chrome.action.onClicked.addListener(function (tab) {
+    chrome.storage.sync.get(['metube', 'clickBehavior'], function (data) {
         if (data === undefined || !data.hasOwnProperty('metube') || data.metube === "") {
             openTab(chrome.runtime.getURL('options.html'), tab);
             return
         }
-        let needToSwitch = (data.clickBehavior === 'send-current-url-and-switch');
-        if (data.clickBehavior == 'do-nothing') {
-            return
-        } else if (data.clickBehavior == 'go-to-metube') {
-            console.log("Going to Metube URL...");
+
+        if (data.clickBehavior === 'go-to-metube') {
             openTab(data.metube, tab);
-        } else {
-            chrome.tabs.query({
-                active: true,
-                lastFocusedWindow: true
-            }, function(tabs) {
-                // use this tab to get the youtube video URL
-                let videoUrl = tabs[0].url;
-                sendVideoUrlToMetube(videoUrl, data.metube, function() {
-                    if (!needToSwitch) {
-                        return;
-                    }
-                    openTab(data.metube, tab);
-                });
-            });
+            return;
         }
+
+        let needToSwitch = (data.clickBehavior === 'send-current-url-and-switch');
+
+        chrome.tabs.query({
+            active: true,
+            lastFocusedWindow: true
+        }, function (tabs) {
+            // use this tab to get the youtube video URL
+            let videoUrl = tabs[0].url;
+            sendVideoUrlToMetube(videoUrl, data.metube, function () {
+                if (!needToSwitch) {
+                    openTab(data.metube, tab);
+                }
+            });
+        });
     });
 });
 
 function openTab(url, currentTab) {
     chrome.tabs.query({
         url: url + "/*"
-    }, function(tabs) {
+    }, function (tabs) {
         if (tabs.length !== 0) {
             chrome.tabs.update(tabs[0].id, {
                 'active': true
-            }, () => {});
+            }, () => {
+            });
         } else {
             chrome.tabs.create({
                 url: url,
