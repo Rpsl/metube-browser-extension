@@ -6,9 +6,7 @@ async function saveOptions() {
     }
 
     let sites = document.getElementById("additional").value;
-
     let clickBehavior = document.querySelector('input[name="click-behavior"]:checked').value;
-
     let contextMenuClickBehavior = document.querySelector('input[name="context-menu-click-behavior"]:checked').value;
 
     chrome.storage.sync.set({
@@ -54,19 +52,19 @@ async function restoreOptions() {
         'clickBehavior',
         'contextMenuClickBehavior'
     ], function (data) {
-        if (data.metube != undefined) {
+        if (data.metube !== undefined) {
             document.getElementById("metube").value = data.metube;
         }
 
-        if (data.sites != undefined) {
+        if (data.sites !== undefined) {
             document.getElementById("additional").value = data.sites;
         }
 
-        if (data.clickBehavior != undefined) {
+        if (data.clickBehavior !== undefined) {
             document.getElementById(data.clickBehavior).checked = true;
         }
 
-        if (data.contextMenuClickBehavior != undefined) {
+        if (data.contextMenuClickBehavior !== undefined) {
             document.getElementById(data.contextMenuClickBehavior).checked = true;
         }
     })
