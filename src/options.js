@@ -8,12 +8,14 @@ async function saveOptions() {
     let sites = document.getElementById("additional").value;
     let clickBehavior = document.querySelector('input[name="click-behavior"]:checked').value;
     let contextMenuClickBehavior = document.querySelector('input[name="context-menu-click-behavior"]:checked').value;
+    let defaultFormat = document.getElementById('default_format').value
 
     chrome.storage.sync.set({
         "metube": url,
         "sites": sites,
         "clickBehavior": clickBehavior,
-        "contextMenuClickBehavior": contextMenuClickBehavior
+        "contextMenuClickBehavior": contextMenuClickBehavior,
+        "defaultFormat": defaultFormat,
     }, function () {
         document.getElementById("saved").classList.remove('hidden');
 
@@ -50,7 +52,8 @@ async function restoreOptions() {
         'metube',
         'sites',
         'clickBehavior',
-        'contextMenuClickBehavior'
+        'contextMenuClickBehavior',
+        'defaultFormat'
     ], function (data) {
         if (data.metube !== undefined) {
             document.getElementById("metube").value = data.metube;
@@ -66,6 +69,10 @@ async function restoreOptions() {
 
         if (data.contextMenuClickBehavior !== undefined) {
             document.getElementById(data.contextMenuClickBehavior).checked = true;
+        }
+
+        if (data.defaultFormat !== undefined) {
+            document.getElementById('default_format').value = data.defaultFormat;
         }
     })
 }

@@ -32,7 +32,18 @@
     <form id="form">
       <h3>Settings</h3>
       <label for="metube">Url of MeTube</label><input type="url" placeholder="http://0.0.0.0:8081/" name="metube" id="metube">
-      <br>
+      <br><br>
+      <label for="default_format">Video format:</label>
+
+      <select name="default_format" id="default_format">
+        <option value="any">Any</option>
+        <option value="mp4">MP4</option>
+        <option value="m4a">M4A</option>
+        <option value="mp3">MP3</option>
+        <option value="opus">OPUS</option>
+        <option value="wav">WAV</option>
+        <option value="thumbnail">Thumbnail</option>
+      </select>
 
       <h4>When you left-click on the extension icon, you'd like it to:</h4>
       <input type="radio" name="click-behavior" id="go-to-metube" value="go-to-metube"><label for="go-to-metube">Go to MeTube URL</label><br>
