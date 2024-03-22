@@ -17,8 +17,6 @@ async function saveOptions() {
       advancedSettings[e.name] = e.checked ? true : false
     })
 
-    console.log(advancedSettings)
-
     chrome.storage.sync.set({
         "metube": url,
         "sites": sites,
@@ -88,7 +86,6 @@ async function restoreOptions() {
 
         if (data.advancedSettings !== undefined) {
           Object.keys(data.advancedSettings).forEach((key) => {
-            console.log(key)
             document.getElementById(key).checked = data.advancedSettings[key];
           })
         }
