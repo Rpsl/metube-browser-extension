@@ -39,7 +39,7 @@ async function saveOptions() {
     // todo: fix it
     // also need make function for check string
     // https://developer.chrome.com/docs/extensions/mv3/match_patterns/
-    if(sites.length <= 1){
+    if(!sites.length){
         return;
     }
 
