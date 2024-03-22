@@ -90,7 +90,7 @@ chrome.action.onClicked.addListener(function (tab) {
             // use this tab to get the youtube video URL
             let videoUrl = tabs[0].url;
             sendVideoUrlToMetube(videoUrl, data.metube, data.defaultFormat, data.advancedSettings, function () {
-                if (!needToSwitch) {
+                if (needToSwitch) {
                     openTab(data.metube, tab);
                 }
             });
