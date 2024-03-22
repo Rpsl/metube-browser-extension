@@ -13,7 +13,7 @@ chrome.runtime.onInstalled.addListener(function () {
     });
 });
 
-function sendVideoUrlToMetube(videoUrl, metubeUrl, format, callback) {
+function sendVideoUrlToMetube(videoUrl, metubeUrl, format, advancedSettings, callback) {
     console.log("Sending videoUrl=" + videoUrl + " to metubeUrl=" + metubeUrl);
 
     if (typeof callback !== 'function') {
@@ -21,17 +21,27 @@ function sendVideoUrlToMetube(videoUrl, metubeUrl, format, callback) {
         };
     }
 
+    let {hostname} = new URL(videoUrl)
+
+    let postData = {
+      "quality": "best",
+      "format": format,
+      "url": videoUrl
+    }
+
+    Object.keys(advancedSettings).forEach((key) => {
+      if (advancedSettings[key]) {
+        postData[key] = hostname.startsWith('www.') ? hostname.replace('www.', '') : hostname
+      }
+    })
+
     fetch(metubeUrl + "/add", {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-            "quality": "best",
-            "format": format,
-            "url": videoUrl
-        })
+        body: JSON.stringify(postData)
     })
         .then(response => response.json())
         .then(function (response) {
@@ -43,7 +53,7 @@ function sendVideoUrlToMetube(videoUrl, metubeUrl, format, callback) {
 }
 
 chrome.contextMenus.onClicked.addListener(function (item, tab) {
-    chrome.storage.sync.get(['metube', 'contextMenuClickBehavior', 'defaultFormat'], function (data) {
+    chrome.storage.sync.get(['metube', 'contextMenuClickBehavior', 'defaultFormat', 'advancedSettings'], function (data) {
         if (data === undefined || !data.hasOwnProperty('metube') || data.metube === "") {
             openTab(chrome.runtime.getURL('options.html'), tab);
             return
@@ -51,7 +61,7 @@ chrome.contextMenus.onClicked.addListener(function (item, tab) {
 
         let needToSwitch = (data.contextMenuClickBehavior === 'context-menu-send-current-url-and-switch');
 
-        sendVideoUrlToMetube(item.linkUrl, data.metube, data.defaultFormat, function () {
+        sendVideoUrlToMetube(item.linkUrl, data.metube, data.defaultFormat, data.advancedSettings, function () {
             if (needToSwitch) {
                 openTab(data.metube, tab);
             }
@@ -60,7 +70,7 @@ chrome.contextMenus.onClicked.addListener(function (item, tab) {
 });
 
 chrome.action.onClicked.addListener(function (tab) {
-    chrome.storage.sync.get(['metube', 'clickBehavior', 'defaultFormat'], function (data) {
+    chrome.storage.sync.get(['metube', 'clickBehavior', 'defaultFormat', 'advancedSettings'], function (data) {
         if (data === undefined || !data.hasOwnProperty('metube') || data.metube === "") {
             openTab(chrome.runtime.getURL('options.html'), tab);
             return
@@ -79,7 +89,7 @@ chrome.action.onClicked.addListener(function (tab) {
         }, function (tabs) {
             // use this tab to get the youtube video URL
             let videoUrl = tabs[0].url;
-            sendVideoUrlToMetube(videoUrl, data.metube, data.defaultFormat, function () {
+            sendVideoUrlToMetube(videoUrl, data.metube, data.defaultFormat, data.advancedSettings, function () {
                 if (!needToSwitch) {
                     openTab(data.metube, tab);
                 }

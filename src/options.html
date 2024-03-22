@@ -54,6 +54,12 @@
       <input type="radio" name="context-menu-click-behavior" id="context-menu-send-current-url" value="context-menu-send-current-url"><label for="context-menu-send-current-url">Send the video URL to MeTube (no tab switch)</label><br>
       <input type="radio" name="context-menu-click-behavior" id="context-menu-send-current-url-and-switch" value="context-menu-send-current-url-and-switch"><label for="context-menu-send-current-url-and-switch">Send the video URL to MeTube and switch to MeTube</label><br>
 
+      <h4>Advanced Settings:</h4>
+      <div id="advanced_settings">
+        <input type="checkbox" name="folder" id="folder" value="true"><label for="folder">Use subfolder based on the Hostname of the URL</label><br>
+        <input type="checkbox" name="custom_name_prefix" id="custom_name_prefix" value="true"><label for="custom_name_prefix">Use name-prefix based on the Hostname of the URL</label><br>
+      </div>
+
       <h3>Additional sites</h3>
       <p>Youtube-dl support <a href="https://github.com/ytdl-org/youtube-dl/blob/master/docs/supportedsites.md" target="_blank">many another sites</a> except youtube. You can add mask url's of this sites in textfield bellow but it can affect performance and we have not tested them support</p>
       <p><textarea name="additional" id="additional" placeholder="https://vimeo.com/*
