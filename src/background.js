@@ -26,15 +26,18 @@ function sendVideoUrlToMetube(videoUrl, metubeUrl, format, advancedSettings, cal
     let postData = {
       "quality": "best",
       "format": format,
-      "url": videoUrl
+      "url": videoUrl,
+      'auto_start': !advancedSettings['disable_auto_start']
     }
 
+
     Object.keys(advancedSettings).forEach((key) => {
-      if (advancedSettings[key]) {
+      if (advancedSettings[key] && !['disable_auto_start'].includes(key) ) {
         postData[key] = hostname.startsWith('www.') ? hostname.replace('www.', '') : hostname
       }
     })
 
+    console.log(postData)
     fetch(metubeUrl + "/add", {
         method: 'POST',
         headers: {
