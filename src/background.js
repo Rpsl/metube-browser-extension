@@ -27,7 +27,7 @@ function sendVideoUrlToMetube(videoUrl, metubeUrl, format, advancedSettings, cal
       "quality": "best",
       "format": format,
       "url": videoUrl,
-      'auto_start': !advancedSettings['disable_auto_start']
+      'auto_start': !advancedSettings['disable_auto_start'] ?? true
     }
 
 
