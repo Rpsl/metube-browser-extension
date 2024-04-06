@@ -12,7 +12,11 @@ async function saveOptions() {
 
     let advancedElements = document.querySelectorAll('#advanced_settings input');
 
-    let advancedSettings = {};
+    let advancedSettings = {
+        'folder': false,
+        'custom_name_prefix': false,
+        'disable_auto_start': false
+    };
     advancedElements.forEach((e) => {
       advancedSettings[e.name] = e.checked ? true : false
     })
