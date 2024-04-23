@@ -10,12 +10,24 @@ async function saveOptions() {
     let contextMenuClickBehavior = document.querySelector('input[name="context-menu-click-behavior"]:checked').value;
     let defaultFormat = document.getElementById('default_format').value
 
+    let advancedElements = document.querySelectorAll('#advanced_settings input');
+
+    let advancedSettings = {
+        'folder': false,
+        'custom_name_prefix': false,
+        'disable_auto_start': false
+    };
+    advancedElements.forEach((e) => {
+      advancedSettings[e.name] = e.checked ? true : false
+    })
+
     chrome.storage.sync.set({
         "metube": url,
         "sites": sites,
         "clickBehavior": clickBehavior,
         "contextMenuClickBehavior": contextMenuClickBehavior,
         "defaultFormat": defaultFormat,
+        "advancedSettings": advancedSettings
     }, function () {
         document.getElementById("saved").classList.remove('hidden');
 
@@ -53,7 +65,8 @@ async function restoreOptions() {
         'sites',
         'clickBehavior',
         'contextMenuClickBehavior',
-        'defaultFormat'
+        'defaultFormat',
+        'advancedSettings'
     ], function (data) {
         if (data.metube !== undefined) {
             document.getElementById("metube").value = data.metube;
@@ -73,6 +86,12 @@ async function restoreOptions() {
 
         if (data.defaultFormat !== undefined) {
             document.getElementById('default_format').value = data.defaultFormat;
+        }
+
+        if (data.advancedSettings !== undefined) {
+          Object.keys(data.advancedSettings).forEach((key) => {
+            document.getElementById(key).checked = data.advancedSettings[key];
+          })
         }
     })
 }
