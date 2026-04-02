@@ -96,7 +96,7 @@ async function restoreOptions() {
     })
 }
 
-function splitLines(t) { return t.split(/\r\n|\r|\n/); }
+function splitLines(t) { return t.split(/\r\n|\r|\n/).filter(s => s.trim() !== ''); }
 
 window.addEventListener("DOMContentLoaded", restoreOptions, { passive: true });
 
